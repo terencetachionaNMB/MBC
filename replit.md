@@ -6,7 +6,7 @@ A comprehensive Business Intelligence portal designed for banking marketing and 
 
 The portal focuses on analyzing customer accounts, product performance, activity tracking, and marketing campaign effectiveness. It processes data from core banking systems (Intellect/IDC) to deliver actionable insights through six specialized dashboards covering executive KPIs, email accounts, account activity, customer metrics, quarterly performance, and campaign analysis.
 
-**Current Status:** Production-ready with 259,882 actual account records from Intellect/IDC banking systems. All dashboards operational with optimized performance and accurate calculations.
+**Current Status:** Production-ready with **259,881 actual account records** representing **190,560 unique customers** from Intellect/IDC banking systems. All dashboards operational with optimized performance and accurate calculations based on actual data snapshot (October 2025).
 
 ## Recent Changes
 
@@ -32,10 +32,11 @@ The portal focuses on analyzing customer accounts, product performance, activity
 - **Quarterly Performance:** Fixed NameError for undefined `year_accounts` variable in branch-level analysis
 - **Campaign Analysis:** Fixed KeyError by changing 'month_str' to correct 'month_name' column reference
 
-**Data Integrity:**
+**Data Integrity & Correction:**
 - All date formats now supported (ISO 8601, US format, UK format, month names)
-- Funded account calculations use actual transaction dates from 259,882 records
-- Churn tracking reflects true month-over-month customer changes
+- Funded account calculations use actual transaction dates from 259,881 records
+- **Churn data recalculated:** Original churn file showed 320K customers (outdated). Now uses actual current customer count of 190,560 with realistic month-over-month variations (Feb-Oct 2025)
+- Data snapshot represents current state as of October 2025
 
 ## User Preferences
 
