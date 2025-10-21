@@ -509,7 +509,7 @@ with col2:
             
             fig = vh.create_line_chart(
                 campaign_period_copy,
-                'month_str',
+                'month_name',
                 'cumulative_growth',
                 'Cumulative Revenue Growth During Campaign (%)',
                 color='#003366',

@@ -246,17 +246,21 @@ else:
 st.markdown("---")
 
 # Branch-wise quarterly performance
-if 'ACNTS_BRN_CODE' in accounts_df.columns:
+if 'ACNTS_BRN_CODE' in accounts_df.columns and 'ACNTS_LAST_TRAN_DATE' in accounts_df.columns:
     st.markdown("### 🏢 Quarterly Performance by Branch")
+    
+    # Filter for funded accounts (those with transactions)
+    funded_accounts = accounts_df[accounts_df['ACNTS_LAST_TRAN_DATE'].notna()].copy()
     
     branch_quarterly = []
     for q in range(1, 4):
         q_start = pd.Timestamp(f'{selected_year}-{(q-1)*3+1:02d}-01')
         q_end = pd.Timestamp(f'{selected_year}-{q*3:02d}-01') + pd.offsets.MonthEnd(0)
         
-        active_in_q = year_accounts[
-            (year_accounts['ACNTS_OPENING_DATE'] <= q_end) &
-            ((year_accounts['last_txn_date'].isna()) | (year_accounts['last_txn_date'] >= q_start))
+        # Count accounts with transactions in this quarter
+        active_in_q = funded_accounts[
+            (funded_accounts['ACNTS_LAST_TRAN_DATE'] >= q_start) &
+            (funded_accounts['ACNTS_LAST_TRAN_DATE'] <= q_end)
         ]
         
         branch_counts = active_in_q['ACNTS_BRN_CODE'].value_counts().head(10)

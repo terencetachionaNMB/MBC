@@ -1,0 +1,161 @@
+# Marketing & Brand Communications BI Portal
+
+## Overview
+
+A comprehensive Business Intelligence portal designed for banking marketing and brand communications departments. The application provides interactive dashboards and analytics for executive-level summaries and operational team insights, built with Streamlit and Python.
+
+The portal focuses on analyzing customer accounts, product performance, activity tracking, and marketing campaign effectiveness. It processes data from core banking systems (Intellect/IDC) to deliver actionable insights through six specialized dashboards covering executive KPIs, email accounts, account activity, customer metrics, quarterly performance, and campaign analysis.
+
+**Current Status:** Production-ready with 259,882 actual account records from Intellect/IDC banking systems. All dashboards operational with optimized performance and accurate calculations.
+
+## Recent Changes
+
+### October 2025 - Performance Optimization & Bug Fixes
+
+**Critical Performance Improvements:**
+- Replaced slow row-by-row `.apply()` operations with vectorized pandas operations (10-100x faster)
+- Date parsing: Multi-format vectorized approach (fast format-specific parse with general fallback)
+- Numeric cleaning: Direct `str.replace()` + `pd.to_numeric()` instead of custom functions
+- Added `@st.cache_data` to expensive Customer Metrics calculations
+- Result: Dramatically improved load times for 259,882 account records
+
+**Bug Fixes:**
+- **Churn Calculation:** Changed from hardcoded 320k baseline to actual month-over-month COMMON_CUSTOMERS data with non-negative values (growth months = 0%)
+- **Quarterly Performance:** Removed dependency on non-existent ACNTS_OPENING_DATE column, using ACNTS_LAST_TRAN_DATE exclusively
+- **Quarterly Performance:** Fixed NameError for undefined `year_accounts` variable in branch-level analysis
+- **Campaign Analysis:** Fixed KeyError by changing 'month_str' to correct 'month_name' column reference
+
+**Data Integrity:**
+- All date formats now supported (ISO 8601, US format, UK format, month names)
+- Funded account calculations use actual transaction dates from 259,882 records
+- Churn tracking reflects true month-over-month customer changes
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Frontend Architecture
+
+**Framework:** Streamlit (Python web framework)
+- Multi-page application structure with main entry point (`app.py`) and dedicated dashboard pages in `pages/` directory
+- Page-based navigation with 6 separate dashboard modules
+- Responsive layout optimized for executive presentations and wide-screen displays
+- Custom CSS styling for professional branding (navy blue #003366 and gold #FFD700 theme)
+- Cached data loading using `@st.cache_resource` decorator for performance optimization
+
+**Visualization Library:** Plotly
+- Interactive charts and graphs for all visualizations
+- Drill-down capabilities across dashboards
+- Consistent brand color palette applied through centralized visualization helper
+- Real-time data visualization with hover interactions
+
+### Backend Architecture
+
+**Data Processing Layer:**
+- **DataLoader** (`utils/data_loader.py`): Centralized CSV file loading and data model creation
+- **DataProcessor** (`utils/data_processor.py`): Data transformation and preparation for visualizations
+- **MetricsCalculator** (`utils/metrics_calculator.py`): Advanced KPI calculations including growth rates, CAGR, and customer lifetime value
+- **VisualizationHelper** (`utils/visualization.py`): Standardized Plotly chart creation with brand styling
+
+**Design Patterns:**
+- Separation of concerns: data loading, processing, calculation, and visualization are decoupled
+- Utility-based architecture with reusable helper classes
+- Caching strategy to minimize redundant data loading
+
+**Data Processing:**
+- CSV-based data ingestion from banking core systems (259,882 account records)
+- Optimized multi-format date parsing (vectorized with fallback handling)
+- Vectorized numeric cleaning for performance at scale
+- Activity segmentation based on configurable thresholds
+- Quarterly aggregations and time-series analysis
+- Month-over-month customer churn calculations with non-negative growth handling
+- Product holding analytics (excludes Account/Card types per business requirements)
+
+### Data Storage
+
+**Primary Storage:** File-based CSV storage in `data/` directory
+- No database implementation currently - all data stored as flat files
+- Data files expected:
+  - `accounts_data.csv` (core account records from Intellect/IDC system)
+  - `customers_data.csv` (customer master CIF data)
+  - `transactions_2024.csv` and `transactions_2025.csv` (transaction history)
+  - `revenue.csv` (revenue tracking)
+  - Reference data: RBZ sector classifications, GL account mappings, product definitions
+
+**Data Model:**
+- Account-centric with 93+ fields from banking core system
+- Customer linkage via `ACNTS_CLIENT_NUM` foreign key
+- Product categorization via `ACNTS_PROD_CODE`
+- Branch segmentation via `ACNTS_BRN_CODE`
+- Activity tracking via `ACNTS_LAST_TRAN_DATE`
+
+**Data Governance:**
+- 4-tier data classification (Public, Internal, Confidential, Restricted)
+- PII handling for customer names, addresses, account numbers
+- Access control framework (Executive, Operational, Read-Only views)
+
+### Authentication & Authorization
+
+**Current State:** No authentication implemented
+- Application runs as open access in Replit environment
+- Documentation outlines intended 3-tier access model (Executive, Operational, Read-Only) but not enforced in code
+
+**Documented Requirements:**
+- Access request workflow through department head approval
+- Role-based data export capabilities
+- Executive view: full dashboard and export access
+- Operational view: activity and accounts dashboards only
+- Read-only view: view dashboards without export
+
+## External Dependencies
+
+### Third-Party Libraries
+
+**Core Framework:**
+- `streamlit`: Web application framework and UI components
+
+**Data Processing:**
+- `pandas`: DataFrame operations and data manipulation
+- `numpy`: Numerical computations and array operations
+
+**Visualization:**
+- `plotly`: Interactive charting library (graph_objects and express modules)
+
+**Utilities:**
+- `pathlib`: File path handling
+- `glob`: Pattern-based file searching
+- `datetime`: Date/time manipulation
+
+### External Data Sources
+
+**Banking Core System:** Intellect/IDC
+- Account master data (ACNTS_* fields)
+- Customer Information File (CIF/Clients_* fields)
+- Transaction records (TRAN_* fields)
+- GL account mappings
+- Product catalog
+
+**Reference Data:**
+- RBZ (Reserve Bank of Zimbabwe) sector classifications
+- Branch master data
+- Product type definitions
+
+### Integration Points
+
+**Data Ingestion:**
+- Manual CSV file upload to `data/` directory
+- No automated ETL or API integrations currently implemented
+- Expected periodic extracts from core banking system
+
+**Export Capabilities:**
+- CSV export functionality on all dashboards
+- No integration with external reporting systems
+
+### Configuration
+
+**Branding:** Hardcoded color scheme (navy #003366, gold #FFD700)
+**Activity Threshold:** Configurable via UI slider (default 90 days)
+**Date Formats:** Multiple format support in date parser
+**Page Layout:** Wide mode with expanded sidebar

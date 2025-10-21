@@ -21,19 +21,37 @@ st.markdown("""
 def load_data():
     return DataLoader()
 
+@st.cache_data
+def get_cached_churn_data(_loader):
+    """Cache expensive churn calculation"""
+    processor = DataProcessor(_loader)
+    return processor.calculate_monthly_churn_rate()
+
+@st.cache_data
+def get_cached_basic_metrics(_loader):
+    """Cache basic customer metrics"""
+    processor = DataProcessor(_loader)
+    return {
+        'total_customers': processor.get_unique_customer_count(),
+        'avg_products': processor.get_avg_products_per_customer()
+    }
+
 loader = load_data()
 
 if loader.get_accounts_data() is None:
     st.error("⚠️ No account data available.")
     st.stop()
 
+# Create processor and calculator instances
 processor = DataProcessor(loader)
 calculator = MetricsCalculator(processor)
 
-# Calculate key metrics
-total_customers = processor.get_unique_customer_count()
-avg_products = processor.get_avg_products_per_customer()
-churn_data = processor.calculate_monthly_churn_rate()
+# Get cached metrics
+with st.spinner('Loading customer metrics...'):
+    basic_metrics = get_cached_basic_metrics(loader)
+    total_customers = basic_metrics['total_customers']
+    avg_products = basic_metrics['avg_products']
+    churn_data = get_cached_churn_data(loader)
 
 # Summary metrics
 st.markdown("### 📊 Key Customer Metrics")

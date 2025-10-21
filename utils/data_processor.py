@@ -192,38 +192,31 @@ class DataProcessor:
         
         df = self.accounts_df.copy()
         
-        # Filter for accounts opened in the specified year or earlier
-        if 'ACNTS_OPENING_DATE' in df.columns:
-            df['opening_year'] = df['ACNTS_OPENING_DATE'].dt.year
-            df = df[df['opening_year'] <= year]
-        
-        # Filter out closed accounts
-        if 'ACNTS_CLOSURE_DATE' in df.columns:
-            df = df[df['ACNTS_CLOSURE_DATE'].isna()]
-        
         # Filter for active/funded accounts (has transactions)
-        if 'ACNTS_LAST_TRAN_DATE' in df.columns:
-            df = df[df['ACNTS_LAST_TRAN_DATE'].notna()]
+        if 'ACNTS_LAST_TRAN_DATE' not in df.columns:
+            return pd.DataFrame()
         
-        # Create quarter periods for 2025
+        df = df[df['ACNTS_LAST_TRAN_DATE'].notna()].copy()
+        
+        # Create quarter periods for the year
         quarters = []
         for q in range(1, 4):  # Q1, Q2, Q3
             q_start = pd.Timestamp(f'{year}-{(q-1)*3+1:02d}-01')
             q_end = pd.Timestamp(f'{year}-{q*3:02d}-01') + pd.offsets.MonthEnd(0)
             
-            # Count accounts active in this quarter
-            if 'ACNTS_LAST_TRAN_DATE' in df.columns:
-                active_in_q = df[
-                    (df['ACNTS_OPENING_DATE'] <= q_end) &
-                    (df['ACNTS_LAST_TRAN_DATE'] >= q_start)
-                ]
-                
-                quarters.append({
-                    'quarter': f'Q{q} {year}',
-                    'funded_accounts': len(active_in_q),
-                    'period_start': q_start,
-                    'period_end': q_end
-                })
+            # Count accounts with transactions in this quarter
+            # An account is "funded" if it had any transaction during the quarter
+            active_in_q = df[
+                (df['ACNTS_LAST_TRAN_DATE'] >= q_start) &
+                (df['ACNTS_LAST_TRAN_DATE'] <= q_end)
+            ]
+            
+            quarters.append({
+                'quarter': f'Q{q} {year}',
+                'funded_accounts': len(active_in_q),
+                'period_start': q_start,
+                'period_end': q_end
+            })
         
         return pd.DataFrame(quarters)
     

@@ -81,10 +81,10 @@ class DataLoader:
         # Load actual accounts data
         accounts_data_path = self._find_csv_file("accounts_data.csv")
         if accounts_data_path:
-            # Read CSV with thousands separator handling and low_memory=False to avoid dtype warnings
-            df = pd.read_csv(accounts_data_path, thousands=',', low_memory=False)
+            # Read CSV - use low_memory=False to avoid dtype warnings
+            df = pd.read_csv(accounts_data_path, low_memory=False)
             
-            # Parse date columns
+            # Parse date columns using vectorized operations (MUCH faster than apply)
             date_columns = [
                 'ACNTS_LAST_TRAN_DATE', 'ACNTS_NONSYS_LAST_DATE', 
                 'INDCLIENT_BIRTH_DATE', 'ACNTS_OPENING_DATE',
@@ -93,16 +93,30 @@ class DataLoader:
             
             for col in date_columns:
                 if col in df.columns:
-                    df[col] = df[col].apply(self._parse_date)
+                    # Save original before parsing
+                    original = df[col].copy()
+                    # Try common format first (fastest path)
+                    df[col] = pd.to_datetime(df[col], format='%B %d, %Y', errors='coerce')
+                    # Fallback: for NaT values, try general parsing on original data
+                    nat_mask = df[col].isna() & original.notna()
+                    if nat_mask.any():
+                        df.loc[nat_mask, col] = pd.to_datetime(original[nat_mask], errors='coerce')
             
-            # Clean numeric columns that might have commas
+            # Clean numeric columns - vectorized (MUCH faster than apply)
             numeric_columns = [
-                'BASE_CURR_BAL', 'LOCAL_CURR_BAL', 'ACNTS_CLIENT_NUM'
+                'BASE_CURR_BAL', 'LOCAL_CURR_BAL'
             ]
             
             for col in numeric_columns:
                 if col in df.columns:
-                    df[col] = df[col].apply(self._clean_numeric)
+                    # Remove commas and convert to numeric
+                    if df[col].dtype == 'object':
+                        df[col] = df[col].str.replace(',', '')
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
+            
+            # ACNTS_CLIENT_NUM should stay as-is (it's already numeric in the data)
+            if 'ACNTS_CLIENT_NUM' in df.columns:
+                df['ACNTS_CLIENT_NUM'] = pd.to_numeric(df['ACNTS_CLIENT_NUM'], errors='coerce')
             
             # Map column names to standardized names for compatibility
             column_mapping = {
@@ -153,12 +167,12 @@ class DataLoader:
             # Clean column names
             self.gl_df.columns = self.gl_df.columns.str.strip()
             
-            # Parse date columns
+            # Parse date columns using vectorized operations
             date_cols = ['Gl Date Of Opening', 'Gl Closure Date', 'Gl Entd On', 
                         'Gl Last Mod On', 'Gl Auth On']
             for col in date_cols:
                 if col in self.gl_df.columns:
-                    self.gl_df[col] = self.gl_df[col].apply(self._parse_date)
+                    self.gl_df[col] = pd.to_datetime(self.gl_df[col], errors='coerce')
         else:
             st.warning("⚠️ GL Category lookup file not found.")
             self.gl_df = None
@@ -179,11 +193,13 @@ class DataLoader:
         """Load product volume summary data"""
         file_path = self._find_csv_file("product_volume.csv")
         if file_path:
-            df = pd.read_csv(file_path, thousands=',')
-            # Clean numeric columns
+            df = pd.read_csv(file_path)
+            # Clean numeric columns using vectorized operations
             for col in ['TOTAL_ACCOUNTS', 'TOTAL_BASE_CURR_BAL', 'TOTAL_LOCAL_CURR_BAL']:
                 if col in df.columns:
-                    df[col] = df[col].apply(self._clean_numeric)
+                    if df[col].dtype == 'object':
+                        df[col] = df[col].str.replace(',', '')
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
             self.product_volume_df = df
         else:
             self.product_volume_df = None
@@ -192,10 +208,12 @@ class DataLoader:
         """Load GL revenue data"""
         file_path = self._find_csv_file("revenue_gls.csv")
         if file_path:
-            df = pd.read_csv(file_path, thousands=',')
-            # Clean numeric columns
+            df = pd.read_csv(file_path)
+            # Clean numeric columns using vectorized operations
             if 'SUM(GLBALH_AC_BAL)' in df.columns:
-                df['SUM(GLBALH_AC_BAL)'] = df['SUM(GLBALH_AC_BAL)'].apply(self._clean_numeric)
+                if df['SUM(GLBALH_AC_BAL)'].dtype == 'object':
+                    df['SUM(GLBALH_AC_BAL)'] = df['SUM(GLBALH_AC_BAL)'].str.replace(',', '')
+                df['SUM(GLBALH_AC_BAL)'] = pd.to_numeric(df['SUM(GLBALH_AC_BAL)'], errors='coerce')
             self.revenue_df = df
         else:
             self.revenue_df = None
@@ -204,10 +222,12 @@ class DataLoader:
         """Load customer churn data"""
         file_path = self._find_csv_file("churn_customers.csv")
         if file_path:
-            df = pd.read_csv(file_path, thousands=',')
-            # Clean numeric columns
+            df = pd.read_csv(file_path)
+            # Clean numeric columns using vectorized operations
             if 'COMMON_CUSTOMERS' in df.columns:
-                df['COMMON_CUSTOMERS'] = df['COMMON_CUSTOMERS'].apply(self._clean_numeric)
+                if df['COMMON_CUSTOMERS'].dtype == 'object':
+                    df['COMMON_CUSTOMERS'] = df['COMMON_CUSTOMERS'].str.replace(',', '')
+                df['COMMON_CUSTOMERS'] = pd.to_numeric(df['COMMON_CUSTOMERS'], errors='coerce')
             # Parse month if needed
             if 'TRAN_MONTH' in df.columns:
                 df['month'] = pd.to_datetime('2025-' + df['TRAN_MONTH'].astype(str) + '-01')
