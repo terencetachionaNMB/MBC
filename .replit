@@ -40,9 +40,5 @@ externalPort = 80
 localPort = 36743
 externalPort = 3000
 
-[[ports]]
-localPort = 45049
-externalPort = 3001
-
 [agent]
 integrations = ["onedrive:1.0.0", "streamlit_database:1.0.0"]
