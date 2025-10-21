@@ -1,0 +1,5 @@
+# This file ensures the data directory is tracked in version control
+# Place your CSV data files in this directory:
+# - accounts_data.csv (actual account records)
+# - GL transaction data (if available)
+# - Any other data sources required for analysis
