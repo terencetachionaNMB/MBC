@@ -107,10 +107,51 @@ class DataProcessor:
     def calculate_monthly_churn_rate(self):
         """
         Calculate monthly churn rate (lost customers month-on-month).
-        Churn = customers who closed all accounts in a month.
+        Uses actual churn data if available, otherwise calculates from closure dates.
         
         Returns: DataFrame with monthly churn rates
         """
+        # Try to get actual churn data first
+        churn_data = self.loader.get_churn_data()
+        if churn_data is not None and len(churn_data) > 0:
+            # Use actual churn data from the system
+            result = churn_data.copy()
+            
+            # Ensure we have required columns
+            if 'COMMON_CUSTOMERS' in result.columns and 'TRAN_MONTH' in result.columns:
+                # Create month column if not exists
+                if 'month' not in result.columns:
+                    result['month'] = pd.to_datetime('2025-' + result['TRAN_MONTH'].astype(str) + '-01')
+                
+                # Sort by month to ensure proper sequence
+                result = result.sort_values('month')
+                
+                # Calculate churned customers as the decrease from previous month
+                # COMMON_CUSTOMERS shows active customers each month
+                result['prev_month_customers'] = result['COMMON_CUSTOMERS'].shift(1)
+                result['customer_change'] = result['prev_month_customers'] - result['COMMON_CUSTOMERS']
+                
+                # Churn is only when customers decrease (positive change = lost customers)
+                # If customers grow (negative change), set churn to 0
+                result['churned_customers'] = result['customer_change'].apply(lambda x: max(0, x) if pd.notna(x) else 0)
+                
+                # Calculate churn rate as percentage of previous month's base
+                # Only calculate when we have previous month data
+                result['churn_rate'] = result.apply(
+                    lambda row: (row['churned_customers'] / row['prev_month_customers']) * 100 
+                    if pd.notna(row['prev_month_customers']) and row['prev_month_customers'] > 0 
+                    else 0, 
+                    axis=1
+                )
+                
+                # Track growth separately for visibility
+                result['customer_growth'] = result['customer_change'].apply(lambda x: max(0, -x) if pd.notna(x) else 0)
+                
+                return result[['month', 'churned_customers', 'churn_rate', 'COMMON_CUSTOMERS']].rename(
+                    columns={'COMMON_CUSTOMERS': 'active_customers'}
+                )
+        
+        # Fallback: Calculate from account closure dates
         if self.accounts_df is None:
             return pd.DataFrame()
         
@@ -128,7 +169,6 @@ class DataProcessor:
             churned_customers.columns = ['month', 'churned_customers']
             
             # Get total active customers at start of each month
-            # This requires historical data - for now, use current total
             total_customers = self.get_unique_customer_count()
             
             # Calculate churn rate
