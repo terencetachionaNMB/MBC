@@ -1,0 +1,92 @@
+ColumnName,DisplayName,Description,SuggestedDataType,SampleValue,Sensitivity,Notes
+ACNTS_ENTITY_NUM,Entity Number,Identifier for the legal entity/banking entity in a multi-entity setup.,INT,1,Low,Used to segregate data across entities/regions.
+ACNTS_INTERNAL_ACNUM,Internal Account ID,System-generated unique internal account identifier (surrogate key).,BIGINT,987654321,High (Operational),Primary key used in joins; do not expose externally.
+ACNTS_BRN_CODE,Branch Code,Code of the servicing/booking branch for the account.,VARCHAR(10),1,Low,Reference to branch master.
+ACNTS_CLIENT_NUM,Customer Number,Unique customer/client identifier linked to the account.,BIGINT,2003456,High (PII),FK to customer master (CIF).
+ACNTS_AC_SEQ_NUM,Account Sequence #,Sequence number for multiple accounts of the same type for the client.,INT,2,Low,Often starts at 1 and increments per product/type.
+ACNTS_ACCOUNT_NUMBER,Account Number,Customer-facing account number displayed on statements and channels.,VARCHAR(32),4.11012E+12,High (PII),May include check digits; format bank-specific.
+ACNTS_PROD_CODE,Product Code,"Code for the banking product (e.g., Savings, Current, Loan).",VARCHAR(10),SB,Low,Reference to product catalog.
+ACNTS_AC_TYPE,Account Type,"High-level account type classification (e.g., SB, CA, TD, LN).",VARCHAR(10),SB,Low,Bank-defined enumerations.
+ACNTS_AC_SUB_TYPE,Account Sub-Type,"Sub-category within the account type (e.g., Premium SB, Student SB).",VARCHAR(20),SB_PREM,Low,Parameterised; optional.
+ACNTS_SCHEME_CODE,Scheme Code,Specific scheme/plan under the product defining pricing/benefits.,VARCHAR(20),SCM001,Low,Reference to scheme master.
+ACNTS_OPENING_DATE,Opening Date,Date the account was opened/activated.,DATE,15/3/2020,Low,Used for tenure/aging calculations.
+ACNTS_AC_NAME1,Account Name 1,Primary account holder name (line 1).,VARCHAR(140),TACHIONA TERENCE,High (PII),Shown on statements/cards.
+ACNTS_AC_NAME2,Account Name 2,Secondary account holder/name continuation (line 2).,VARCHAR(140),& CO.,High (PII),Optional; for joint/corporate naming.
+ACNTS_SHORT_NAME,Short Name,Short display name or nickname for the account.,VARCHAR(60),T TERENCE,Medium (PII),Used in channel UI lists.
+ACNTS_AC_ADDR1,Address Line 1,Account address line 1 (mailing/registered).,VARCHAR(140),12 Samora Machel Ave,High (PII),Typically inherited from CIF at opening.
+ACNTS_AC_ADDR2,Address Line 2,Account address line 2.,VARCHAR(140),Harare CBD,High (PII),Optional.
+ACNTS_AC_ADDR3,Address Line 3,Account address line 3.,VARCHAR(140),Harare,High (PII),Optional.
+ACNTS_AC_ADDR4,Address Line 4,Account address line 4.,VARCHAR(140),Zimbabwe,High (PII),Optional.
+ACNTS_AC_ADDR5,Address Line 5,Account address line 5.,VARCHAR(140),,High (PII),Optional/rarely used.
+ACNTS_LOCN_CODE,Location Code,Geographic/service location code associated with the account.,VARCHAR(10),HRE01,Low,Reference to location table.
+ACNTS_CURR_CODE,Currency Code,Account currency ISO code.,CHAR(3),ZWL,Low,"e.g., ZWL, USD, ZAR."
+ACNTS_GLACC_CODE,GL Account Code,Mapped General Ledger account for the product/account.,VARCHAR(20),21010010,Medium (Operational),For financial reporting and posting.
+ACNTS_SALARY_ACNT,Salary Account Flag,Indicates if the account is designated as a salary account.,CHAR(1),Y,Low,Y/N.
+ACNTS_PASSBK_REQD,Passbook Required,Whether a passbook is required for this account.,CHAR(1),N,Low,Y/N; legacy for passbook products.
+ACNTS_DCHANNEL_CODE,Delivery Channel Code,"Preferred/default delivery channel code (e.g., branch, digital).",VARCHAR(10),DIG,Low,Bank-specific enumeration.
+ACNTS_MKT_CHANNEL_CODE,Marketing Channel,Channel via which the account was sourced/marketed.,VARCHAR(10),ONLINE,Low,Attribution for sourcing KPIs.
+ACNTS_MKT_BY_STAFF,Marketed By Staff,Staff ID who sourced the account.,VARCHAR(20),EMP1023,Medium (Internal),FK to staff master.
+ACNTS_MKT_BY_BRN,Marketed By Branch,Branch that sourced the account.,VARCHAR(10),5,Low,For channel/branch performance.
+ACNTS_DSA_CODE,DSA Code,Direct Selling Agent code if sourced via DSA.,VARCHAR(20),DSA07,Low,Reference to DSA master.
+ACNTS_MODE_OF_OPERN,Mode of Operation,"Operational mandate (Single, Joint, Either/Survivor, etc.).",VARCHAR(10),SINGLE,Low,"Bank-defined codes (e.g., S, J, E/S)."
+ACNTS_MOPR_ADDN_INFO,Mode of Opn. Extra Info,"Additional mandate/operation information (e.g., signatory remarks).",VARCHAR(255),Min 2 signatories,Medium (PII),Free text; verify governance.
+ACNTS_REPAYABLE_TO,Repayable To,"Repayment payable to whom (e.g., Primary holder/3rd party).",VARCHAR(50),PRIMARY,Low,Loans/TD context; bank-specific values.
+ACNTS_SPECIAL_ACNT,Special Account Flag,"Indicates special category (e.g., Staff, VIP, NRE).",VARCHAR(10),STAFF,Low,Enumerated; parameterised.
+ACNTS_NOMINATION_REQD,Nomination Required,Whether nomination details are required/present.,CHAR(1),Y,Low,Y/N.
+ACNTS_CREDIT_INT_REQD,Credit Interest Required,Whether credit interest accrues/credits on this account.,CHAR(1),Y,Low,"Typically Y for SB/TD, N for CA (unless negotiated)."
+ACNTS_MINOR_ACNT,Minor Account,Indicates if the account holder is a minor.,CHAR(1),N,High (PII),Impacts KYC/mandate rules.
+ACNTS_POWER_OF_ATTORNEY,Power of Attorney,Indicates presence of POA/mandate; could store POA reference.,VARCHAR(30),POA-REF-001,High (PII),Some cores use flag+reference; confirm implementation.
+ACNTS_CONNP_INV_NUM,Connected/Investment Ref,Connected party or investment reference number (bank-specific).,VARCHAR(30),CONN12345,Medium (Operational),Definition varies; confirm with parameter docs.
+ACNTS_NUM_SIG_COMB,# Signature Combinations,Number of signature combinations required for operations.,INT,1,Low,Used with joint/mandate logic.
+ACNTS_TELLER_OPERN,Teller Operations Enabled,Whether teller/counter transactions are allowed.,CHAR(1),Y,Low,Y/N.
+ACNTS_ATM_OPERN,ATM Operations Enabled,Whether ATM transactions are allowed.,CHAR(1),Y,Low,Y/N.
+ACNTS_CALL_CENTER_OPERN,Call Center Ops Enabled,Whether call center transactions/requests are allowed.,CHAR(1),Y,Low,Y/N.
+ACNTS_INET_OPERN,Internet Banking Enabled,Whether Internet banking access/transactions are allowed.,CHAR(1),Y,Low,Y/N.
+ACNTS_CR_CARDS_ALLOWED,Credit Cards Allowed,Whether the customer/account is eligible for credit card linkage.,CHAR(1),N,Low,Y/N; sometimes informational.
+ACNTS_KIOSK_BANKING,Kiosk Banking Enabled,Whether kiosk/self-service banking is allowed.,CHAR(1),N,Low,Y/N.
+ACNTS_SMS_OPERN,SMS Banking Enabled,Whether SMS alerts/transactions are enabled.,CHAR(1),Y,Low,Y/N; may tie to alert preferences.
+ACNTS_OD_ALLOWED,Overdraft Allowed,Whether overdraft facility is allowed/linked.,CHAR(1),N,Low,Y/N; OD terms configured elsewhere.
+ACNTS_CHQBK_REQD,Chequebook Required,Whether chequebook is requested/issued for the account.,CHAR(1),Y,Low,Y/N.
+ACNTS_ARM_CRM,ARM/CRM Code,Assigned Relationship Manager (ARM) or CRM code.,VARCHAR(20),RM102,Medium (Internal),FK to staff/CRM master.
+ACNTS_ARM_ROLE,ARM Role,Role/title of the assigned relationship manager.,VARCHAR(20),SRM,Low,Bank-specific enumerations.
+ACNTS_BUSDIVN_CODE,Business Division Code,Business unit/division owning the account.,VARCHAR(10),RETAIL,Low,Reference to org structure.
+ACNTS_CREATION_STATUS,Creation Status,"Lifecycle status of the account record (e.g., Pre-Open, Active).",VARCHAR(20),ACTIVE,Low,Status transitions controlled by workflow.
+ACNTS_BASE_DATE,Base Date,Base/reference date for interest computation or charges.,DATE,15/3/2020,Low,Varies by product; confirm logic.
+ACNTS_INOP_ACNT,Inoperative Flag,Indicates if the account is classified as inoperative.,CHAR(1),N,Low,Y/N; based on dormancy rules.
+ACNTS_DORMANT_ACNT,Dormant Flag,Indicates if the account is dormant.,CHAR(1),N,Low,Y/N; often overlaps with inoperative.
+ACNTS_LAST_TRAN_DATE,Last Transaction Date,Date of the last financial/non-financial transaction.,DATE,30/8/2025,Low,Used for dormancy aging.
+ACNTS_NONSYS_LAST_DATE,Last Non-System Txn Date,"Last transaction date not originated by the core (e.g., migration/manual).",DATE,1/3/2020,Low,Bank-specific usage.
+ACNTS_INT_CALC_UPTO,Interest Calc. Up To,Date up to which interest has been calculated.,DATE,30/6/2025,Low,Batch-calculated.
+ACNTS_MMB_INT_ACCR_UPTO,MMB Interest Accrual Up To,Date up to which interest has accrued (MMB/bank-specific logic).,DATE,30/6/2025,Low,MMB meaning varies; confirm with product setup.
+ACNTS_INT_ACCR_UPTO,Interest Accrual Up To,Date up to which interest accruals are recorded.,DATE,30/6/2025,Low,Accruals posted to GL.
+ACNTS_INT_DBCR_UPTO,Interest Debit/Credit Up To,Date up to which interest was actually debited/credited to the account.,DATE,30/6/2025,Low,Posting date vs accrual date.
+ACNTS_TRF_TO_OVERDUE,Transfer to Overdue,Flag/date indicator for transfer of amounts to overdue status.,CHAR(1),N,Low,Y/N or accompanied by date in other tables.
+ACNTS_DB_FREEZED,Debit Frozen,Indicates if debits are frozen (no debits allowed).,CHAR(1),N,Low,Y/N; due to legal/AML/ops hold.
+ACNTS_CR_FREEZED,Credit Frozen,Indicates if credits are frozen (no credits allowed).,CHAR(1),N,Low,Y/N; rare.
+ACNTS_CONTRACT_BASED_FLG,Contract-Based Flag,"Marks accounts governed by a specific contract (e.g., corporate pooling).",CHAR(1),N,Low,Y/N; bank-specific.
+ACNTS_ACST_UPTO_DATE,Acct Status Up To Date,Date up to which account status was updated/validated.,DATE,1/9/2025,Low,Batch derived; used in reporting.
+ACNTS_LAST_STMT_NUM,Last Statement Number,The last generated statement/run sequence number.,INT,42,Low,Increments per cycle.
+ACNTS_LAST_CHQBK_ISSUED,Last Chequebook Issued,Identifier/series of last chequebook issued.,VARCHAR(30),CHQ-2024-015,Low,May be series start/end.
+ACNTS_CLOSURE_DATE,Closure Date,Date the account was closed.,DATE,,Low,Null if active.
+ACNTS_PREOPEN_ENTD_BY,Pre-Open Entered By,User who keyed the pre-open record.,VARCHAR(30),USR1001,Medium (Internal),Audit trail.
+ACNTS_PREOPEN_ENTD_ON,Pre-Open Entered On,Timestamp the pre-open record was entered.,DATETIME,10/3/2020 10:21,Low,Audit trail.
+ACNTS_PREOPEN_LAST_MOD_BY,Pre-Open Last Modified By,User who last modified the pre-open record.,VARCHAR(30),USR1002,Medium (Internal),Audit trail.
+ACNTS_PREOPEN_LAST_MOD_ON,Pre-Open Last Modified On,Timestamp of last modification to pre-open record.,DATETIME,12/3/2020 16:05,Low,Audit trail.
+ACNTS_ENTD_BY,Entered By,User who created the account record.,VARCHAR(30),USR2001,Medium (Internal),Audit trail.
+ACNTS_ENTD_ON,Entered On,Timestamp the account record was created.,DATETIME,15/3/2020 09:00,Low,Audit trail.
+ACNTS_LAST_MOD_BY,Last Modified By,User who last modified the account record.,VARCHAR(30),USR2002,Medium (Internal),Audit trail.
+ACNTS_LAST_MOD_ON,Last Modified On,Timestamp of last modification to the account record.,DATETIME,20/11/2024 14:30,Low,Audit trail.
+ACNTS_AUTH_BY,Authorized By,User who authorized the account record.,VARCHAR(30),SUP1001,Medium (Internal),Maker-checker control.
+ACNTS_AUTH_ON,Authorized On,Timestamp of authorization.,DATETIME,15/3/2020 11:30,Low,Maker-checker control.
+TBA_MAIN_KEY,TBA Main Key,System main unique key for TBA/core banking table (replication/sync).,VARCHAR(64),TBA-AC-0000001,Low,System generated; do not alter.
+ACNTS_TENOR,Tenor,Tenor value for term products.,INT,365,Low,Used with TENOR_DMY.
+ACNTS_TENOR_DMY,Tenor Unit (D/M/Y),"Tenor unit: D=Days, M=Months, Y=Years.",CHAR(1),D,Low,Enumerated: D/M/Y.
+ACNTS_MATURITY_DATE,Maturity Date,Maturity date for term deposits/loan schedules.,DATE,15/3/2021,Low,Derived from opening date + tenor.
+ACNTS_SALARY_PAY_AC,Salary Payout Account,Indicates/links salary payout arrangements for this account.,CHAR(1),N,Low,Y/N or link; bank-specific.
+ACNTS_APPL_NUM,Application Number,Origination/application reference number.,VARCHAR(30),APP-2020-000123,Medium (PII),From onboarding system.
+ACNTS_SLIPS_DIRECT_DB,Direct Debit (Slips),Whether direct debit via slips/mandates is allowed.,CHAR(1),Y,Low,Y/N; mandates stored elsewhere.
+ACNTS_UDCH_CODE,UDCH Code,User-Defined Characteristic/Charge code.,VARCHAR(20),UD01,Low,Bank-specific; verify meaning.
+ACNTS_UDCH_SCHEME,UDCH Scheme,User-defined characteristic/charge scheme.,VARCHAR(20),UDSCH01,Low,Bank-specific; verify meaning.
+ACNTS_ESCHEAT_ACNT,Escheat Account,Flag/indicator that the account is escheatable or linked escheat account.,CHAR(1),N,Low,Y/N; escheat processing handled by separate batch.
+ACNTS_LAST_DB_INT_RECOVRY_DATE,Last Debit Interest Recovery,"Date on which debit interest was last recovered (e.g., loans/OD).",DATE,30/6/2025,Low,Spelling varies by core; confirm source.
+ACNTS_MBLBNK_OPERN,Mobile Banking Enabled,Whether mobile banking channel is enabled.,CHAR(1),Y,Low,Y/N.
