@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from utils.data_loader import DataLoader
-from utils.branding import apply_nmb_branding, show_nmb_logo, show_nmb_footer
+from utils.branding import apply_nmb_branding, show_nmb_logo, show_nmb_footer, show_acknowledgment, create_section_divider
 from datetime import datetime
 
 # Page configuration
@@ -192,6 +192,10 @@ def main():
         """)
     
     st.markdown("---")
+    
+    # Project Acknowledgment Section
+    st.markdown(create_section_divider("Project Recognition"), unsafe_allow_html=True)
+    show_acknowledgment()
     
     # NMB Custom Footer
     show_nmb_footer()
