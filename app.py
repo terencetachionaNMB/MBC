@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from utils.data_loader import DataLoader
+from utils.branding import apply_nmb_branding, show_nmb_logo, show_nmb_footer
 from datetime import datetime
 
 # Page configuration
@@ -10,6 +11,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Apply NMB branding
+apply_nmb_branding()
 
 # Custom CSS for branding (navy blue and gold theme)
 st.markdown("""
@@ -54,6 +58,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def main():
+    # NMB Logo
+    show_nmb_logo()
+    
     # Header
     st.markdown("""
         <div class="main-header">
@@ -186,13 +193,8 @@ def main():
     
     st.markdown("---")
     
-    # Footer
-    st.markdown("""
-        <div style="text-align: center; color: #666; padding: 2rem; border-top: 1px solid #eee; margin-top: 2rem;">
-            <p>Marketing & Brand Communications | Business Intelligence Portal</p>
-            <p style="font-size: 0.8rem;">Powered by Streamlit | Data as of October 21, 2025</p>
-        </div>
-    """, unsafe_allow_html=True)
+    # NMB Custom Footer
+    show_nmb_footer()
 
 if __name__ == "__main__":
     main()

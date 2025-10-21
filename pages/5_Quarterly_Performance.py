@@ -4,8 +4,13 @@ from utils.data_loader import DataLoader
 from utils.data_processor import DataProcessor
 from utils.metrics_calculator import MetricsCalculator
 from utils.visualization import VisualizationHelper as vh
+from utils.branding import apply_nmb_branding, show_nmb_logo, show_nmb_footer
 
 st.set_page_config(page_title="Quarterly Performance", page_icon="📅", layout="wide")
+apply_nmb_branding()
+
+# NMB Logo
+show_nmb_logo()
 
 # Header
 st.markdown("""
@@ -309,8 +314,4 @@ if len(quarterly_data) > 0:
     )
 
 # Footer
-st.markdown("""
-    <div style="text-align: center; color: #666; padding: 1rem; border-top: 1px solid #eee; margin-top: 2rem;">
-        <p>Quarterly Performance Tracker | Updated: October 21, 2025</p>
-    </div>
-""", unsafe_allow_html=True)
+show_nmb_footer()

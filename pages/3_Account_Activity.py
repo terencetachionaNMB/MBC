@@ -3,9 +3,14 @@ import pandas as pd
 from utils.data_loader import DataLoader
 from utils.data_processor import DataProcessor
 from utils.visualization import VisualizationHelper as vh
+from utils.branding import apply_nmb_branding, show_nmb_logo, show_nmb_footer
 from datetime import datetime, timedelta
 
 st.set_page_config(page_title="Account Activity", page_icon="⚡", layout="wide")
+apply_nmb_branding()
+
+# NMB Logo
+show_nmb_logo()
 
 # Header
 st.markdown("""
@@ -321,8 +326,4 @@ with tab2:
     show_account_list(inactive_filtered, "Inactive Accounts")
 
 # Footer
-st.markdown("""
-    <div style="text-align: center; color: #666; padding: 1rem; border-top: 1px solid #eee; margin-top: 2rem;">
-        <p>Account Activity Analysis | Updated: October 21, 2025</p>
-    </div>
-""", unsafe_allow_html=True)
+show_nmb_footer()

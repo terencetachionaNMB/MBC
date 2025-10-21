@@ -10,7 +10,14 @@ The portal focuses on analyzing customer accounts, product performance, activity
 
 ## Recent Changes
 
-### October 2025 - Performance Optimization & Bug Fixes
+### October 2025 - Performance Optimization, Bug Fixes & NMB Branding
+
+**NMB Branding Implementation:**
+- Added NMB Bank logo to all pages (main app + 6 dashboards)
+- Removed "Powered by Streamlit" footer
+- Implemented custom branded footer: "Made with ❤️ by NMB Business Intelligence"
+- Created centralized branding utility (`utils/branding.py`) for consistent application-wide styling
+- Hidden Streamlit menu and footer for professional appearance
 
 **Critical Performance Improvements:**
 - Replaced slow row-by-row `.apply()` operations with vectorized pandas operations (10-100x faster)

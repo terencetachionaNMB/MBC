@@ -4,9 +4,14 @@ from utils.data_loader import DataLoader
 from utils.data_processor import DataProcessor
 from utils.metrics_calculator import MetricsCalculator
 from utils.visualization import VisualizationHelper as vh
+from utils.branding import apply_nmb_branding, show_nmb_logo, show_nmb_footer
 from datetime import datetime, timedelta
 
 st.set_page_config(page_title="Customer Metrics", page_icon="👥", layout="wide")
+apply_nmb_branding()
+
+# NMB Logo
+show_nmb_logo()
 
 # Header
 st.markdown("""
@@ -333,8 +338,4 @@ if concentration:
         st.plotly_chart(fig, use_container_width=True)
 
 # Footer
-st.markdown("""
-    <div style="text-align: center; color: #666; padding: 1rem; border-top: 1px solid #eee; margin-top: 2rem;">
-        <p>Customer Metrics Dashboard | Updated: October 21, 2025</p>
-    </div>
-""", unsafe_allow_html=True)
+show_nmb_footer()

@@ -4,9 +4,14 @@ import numpy as np
 from utils.data_loader import DataLoader
 from utils.data_processor import DataProcessor
 from utils.visualization import VisualizationHelper as vh
+from utils.branding import apply_nmb_branding, show_nmb_logo, show_nmb_footer
 from datetime import datetime, timedelta
 
 st.set_page_config(page_title="Campaign Analysis", page_icon="🎯", layout="wide")
+apply_nmb_branding()
+
+# NMB Logo
+show_nmb_logo()
 
 # Header
 st.markdown("""
@@ -612,9 +617,4 @@ with st.expander("📊 View Campaign Insights"):
         """)
 
 # Footer
-st.markdown("""
-    <div style="text-align: center; color: #666; padding: 1rem; border-top: 1px solid #eee; margin-top: 2rem;">
-        <p>Campaign Analysis Dashboard | Updated: October 21, 2025</p>
-        <p style="font-size: 0.8rem;">Non-Funded Income Campaign: June - September 2025</p>
-    </div>
-""", unsafe_allow_html=True)
+show_nmb_footer()
