@@ -512,8 +512,8 @@ nmb-bi-portal/
 ## 🏆 Project Recognition
 
 **Developed By:** Terence Tachiona  
-**Role:** Business Intelligence Specialist  
-**Organization:** NMB Bank Zimbabwe - Marketing & Brand Communications  
+**Role:** Business Intelligence Architect 
+**Organization:** NMB Bank Limited Zimbabwe 
 **Achievement:** Solo development of comprehensive BI portal demonstrating tangible business value through advanced analytics  
 
 ---
@@ -521,12 +521,12 @@ nmb-bi-portal/
 ## 📞 Support
 
 **For Technical Support:**
-- Email: bi@nmbz.co.zw
+- Email: terencet@nmbz.co.zw
 - Internal Extension: [Your Extension]
 
 **For Access Requests:**
 - Contact your department head
-- Email bi@nmbz.co.zw with required details
+- Email terencet@nmbz.co.zw with required details
 
 ---
 
